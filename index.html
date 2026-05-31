@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VibeRender Studio - AI Renovation & 3D Engine</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Custom styles for the before/after slider comparison */
+        .slider-container {
+            position: relative;
+            overflow: hidden;
+            user-select: none;
+        }
+        .image-after {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        .slider-handle {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background-color: #fff;
+            cursor: ew-resize;
+            z-index: 10;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+        .slider-button {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px;
+            height: 40px;
+            background-color: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+            color: #3b82f6;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-100 font-sans min-h-screen selection:bg-blue-500 selection:text-white">
+
+    <header class="border-b border-gray-800 bg-gray-900/80 backdrop-blur sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="bg-blue-600 p-2 rounded-lg text-white">
+                    <i class="fa-solid fa-cube text-xl animate-pulse"></i>
+                </div>
+                <div>
+                    <span class="text-xl font-bold tracking-tight bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">VibeRender</span>
+                    <span class="text-xs block text-gray-400 -mt-1 font-mono">v1.0.0-beta</span>
+                </div>
+            </div>
+            <nav class="hidden md:flex space-x-8 text-sm font-medium">
+                <a href="#analyzer" class="text-gray-300 hover:text-white transition">Floorplan Interpreter</a>
+                <a href="#visualizer" class="text-gray-300 hover:text-white transition">Before & After Showcase</a>
+                <a href="#api" class="text-gray-300 hover:text-white transition font-mono"><span class="text-blue-400">&lt;/&gt;</span> REST API</a>
+            </nav>
+            <div class="flex items-center space-x-4">
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-900 text-green-300 border border-green-800">
+                    <span class="w-1.5 h-1.5 mr-1.5 bg-green-400 rounded-full inline-block"></span> Engine Active
+                </span>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-16">
+        
+        <section class="text-center max-w-3xl mx-auto space-y-4">
+            <h1 class="text-4xl sm:text-5xl font-extrabold text-white tracking-tight">
+                Turn 2D Floorplans into <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400">Immersive 3D Reality</span>
+            </h1>
+            <p class="text-lg text-gray-400">
+                A purpose-built suite for modern renovation companies. Programmatically ingest construction blueprints, analyze spatial components, and render stunning transformation environments.
+            </p>
+        </section>
+
+        <hr class="border-gray-800">
+
+        <section id="analyzer" class="space-y-6">
+            <div class="border-l-4 border-blue-500 pl-4">
+                <h2 class="text-2xl font-bold text-white">1. Intelligent Floorplan Interpreter</h2>
+                <p class="text-gray-400 text-sm">Upload a standard architectural layout. The AI vision engine handles wall telemetry, door locations, and room tagging instantly.</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="lg:col-span-2 bg-gray-800/50 border-2 border-dashed border-gray-700 rounded-xl p-8 flex flex-col items-center justify-center min-h-[350px] transition hover:border-blue-500/50 group relative" id="dropzone">
+                    <input type="file" id="file-input" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" accept="image/*">
+                    <div class="text-center space-y-4 pointer-events-none" id="upload-prompt">
+                        <div class="mx-auto w-16 h-16 bg-gray-800 rounded-full flex items-center justify-center group-hover:scale-110 transition text-gray-400 group-hover:text-blue-400">
+                            <i class="fa-solid fa-cloud-arrow-up text-2xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-base font-semibold text-gray-200">Upload architectural schematic</p>
+                            <p class="text-xs text-gray-500 mt-1">Supports PNG, JPG, PDF blueprints up to 25MB</p>
+                        </div>
+                        <button type="button" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-sm font-medium rounded-lg transition text-white">Browse Files</button>
+                    </div>
+                    <div id="blueprint-preview-container" class="hidden w-full h-full flex flex-col items-center justify-center space-y-4">
+                        <img id="blueprint-img" src="" alt="Uploaded Blueprint" class="max-h-[280px] rounded border border-gray-700 shadow-lg">
+                        <button type="button" id="reset-upload" class="text-xs text-red-400 hover:underline"><i class="fa-solid fa-trash mr-1"></i> Clear & Upload Another</button>
+                    </div>
+                </div>
+
+                <div class="bg-gray-800/40 border border-gray-800 rounded-xl p-6 flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-sm font-semibold text-gray-300 uppercase tracking-wider font-mono mb-4 flex items-center justify-between">
+                            <span>Telemetry Analysis</span>
+                            <span class="w-2 h-2 rounded-full bg-yellow-400 animate-ping" id="status-pulse"></span>
+                        </h3>
+                        <div class="space-y-4" id="telemetry-idle">
+                            <div class="p-4 bg-gray-900/50 rounded-lg border border-gray-800 text-center text-gray-500 text-sm py-12">
+                                <i class="fa-solid fa-hourglass-start block text-xl mb-2 text-gray-600"></i>
+                                Waiting for floorplan ingestion sequence...
+                            </div>
+                        </div>
+                        <div class="space-y-3 hidden font-mono text-xs" id="telemetry-active">
+                            <div class="flex justify-between py-1.5 border-b border-gray-800">
+                                <span class="text-gray-500">INGESTION_STATUS</span>
+                                <span class="text-green-400 font-bold">PARSED_SUCCESSFULLY</span>
+                            </div>
+                            <div class="flex justify-between py-1.5 border-b border-gray-800">
+                                <span class="text-gray-500">DETECTED_WALL_COUNT</span>
+                                <span class="text-white font-bold" id="telemetry-walls">24</span>
+                            </div>
+                            <div class="flex justify-between py-1.5 border-b border-gray-800">
+                                <span class="text-gray-500">EST_TOTAL_AREA</span>
+                                <span class="text-white font-bold" id="telemetry-area">1,142 sq ft</span>
+                            </div>
+                            <div class="flex justify-between py-1.5 border-b border-gray-800">
+                                <span class="text-gray-500">IDENTIFIED_ZONES</span>
+                                <span class="text-blue-400 font-bold" id="telemetry-zones">Kitchen, Living, Bath (2)</span>
+                            </div>
+                            <div class="pt-2">
+                                <span class="text-gray-500 block mb-1">BOUNDING_BOX_CONFIDENCE</span>
+                                <div class="w-full bg-gray-700 h-2 rounded-full overflow-hidden">
+                                    <div class="bg-gradient-to-r from-blue-500 to-emerald-400 h-full w-[94.2%]"></div>
+                                </div>
+                                <span class="text-[10px] text-right block text-gray-400 mt-1">94.2% Spatial Confidence</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button id="process-to-3d" disabled class="w-full mt-6 py-3 bg-gray-700 text-gray-400 cursor-not-allowed font-medium rounded-lg transition flex items-center justify-center space-x-2">
+                        <span>Generate 3D Renders</span>
+                        <i class="fa-solid fa-arrow-right text-xs"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <hr class="border-gray-800">
+
+        <section id="visualizer" class="space-y-6">
+            <div class="border-l-4 border-indigo-500 pl-4">
+                <h2 class="text-2xl font-bold text-white">2. Live Before & After Transformation</h2>
+                <p class="text-gray-400 text-sm">Drag the slider canvas dynamically to view structural overhauls, lighting treatments, and architectural modifications built directly from interpreted space files.</p>
+            </div>
+
+            <div class="flex space-x-2 border-b border-gray-800 pb-4">
+                <button class="px-4 py-2 bg-indigo-600 text-white text-xs font-semibold uppercase tracking-wider rounded-md shadow" onclick="switchScene('kitchen')">Scenario A: Kitchen Core</button>
+                <button class="px-4 py-2 bg-gray-800 text-gray-400 hover:text-white text-xs font-semibold uppercase tracking-wider rounded-md transition" onclick="switchScene('living')">Scenario B: Living Quarters</button>
+            </div>
+
+            <div class="relative max-w-5xl mx-auto rounded-2xl border border-gray-800 shadow-2xl bg-gray-950 overflow-hidden">
+                <div class="slider-container w-full aspect-[16/9]" id="beforeAfterSlider">
+                    <img id="imgBefore" src="https://images.unsplash.com/photo-1565183997392-2f6f122e5912?auto=format&fit=crop&q=80&w=1600" alt="Before Reno" class="w-full h-full object-cover">
+                    <div class="absolute top-4 left-4 z-20 bg-black/60 backdrop-blur px-3 py-1.5 rounded text-xs font-mono font-bold text-red-400 border border-red-500/30 uppercase tracking-widest">
+                        Before (Existing Structure)
+                    </div>
+
+                    <div class="image-after" id="clipContainer" style="clip-path: inset(0 0 0 50%);">
+                        <img id="imgAfter" src="https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&q=80&w=1600" alt="After Reno" class="w-full h-full object-cover">
+                        <div class="absolute top-4 right-4 z-20 bg-black/60 backdrop-blur px-3 py-1.5 rounded text-xs font-mono font-bold text-green-400 border border-green-500/30 uppercase tracking-widest">
+                            After (3D Render Concept)
+                        </div>
+                    </div>
+
+                    <div class="slider-handle" id="sliderHandle" style="left: 50%;">
+                        <div class="slider-button">
+                            <i class="fa-solid fa-arrows-left-right text-sm"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <hr class="border-gray-800">
+
+        <section id="api" class="space-y-6">
+            <div class="border-l-4 border-purple-500 pl-4">
+                <h2 class="text-2xl font-bold text-white">3. Core Rendering & Ingestion API</h2>
+                <p class="text-gray-400 text-sm">Integrate the rendering lifecycle directly into mobile apps, CRM systems, or enterprise vendor tools.</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <div class="lg:col-span-5 space-y-4">
+                    <div class="p-4 bg-gray-800/40 rounded-xl border border-gray-800 cursor-pointer hover:bg-gray-800/70 transition group border-l-4 border-l-green-500" onclick="setActiveEndpoint('POST', '/v1/floorplan/ingest', 'post-ingest-payload')">
+                        <div class="flex items-center space-x-2">
+                            <span class="px-2 py-0.5 bg-green-900/60 border border-green-700 text-green-400 rounded text-[10px] font-bold font-mono">POST</span>
+                            <span class="font-mono text-sm font-semibold text-gray-200">/v1/floorplan/ingest</span>
+                        </div>
+                        <p class="text-xs text-gray-400 mt-2">Submit blueprint imagery artifacts for structural matrix decomposition.</p>
+                    </div>
+
+                    <div class="p-4 bg-gray-800/40 rounded-xl border border-gray-800 cursor-pointer hover:bg-gray-800/70 transition group border-l-4 border-l-blue-500" onclick="setActiveEndpoint('GET', '/v1/render/status/{job_id}', 'get-status-payload')">
+                        <div class="flex items-center space-x-2">
+                            <span class="px-2 py-0.5 bg-blue-900/60 border border-blue-700 text-blue-400 rounded text-[10px] font-bold font-mono">GET</span>
+                            <span class="font-mono text-sm font-semibold text-gray-200">/v1/render/status/{job_id}</span>
+                        </div>
+                        <p class="text-xs text-gray-400 mt-2">Poll current rendering tasks or retrieve signed 3D texture outputs.</p>
+                    </div>
+
+                    <div class="p-4 bg-gray-800/40 rounded-xl border border-gray-800 cursor-pointer hover:bg-gray-800/70 transition group border-l-4 border-l-purple-500" onclick="setActiveEndpoint('POST', '/v1/scene/transform', 'post-transform-payload')">
+                        <div class="flex items-center space-x-2">
+                            <span class="px-2 py-0.5 bg-purple-900/60 border border-purple-700 text-purple-400 rounded text-[10px] font-bold font-mono">POST</span>
+                            <span class="font-mono text-sm font-semibold text-gray-200">/v1/scene/transform</span>
+                        </div>
+                        <p class="text-xs text-gray-400 mt-2">Apply customizable architectural material palettes and styling definitions.</p>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-7 bg-gray-950 rounded-xl border border-gray-800 overflow-hidden flex flex-col justify-between">
+                    <div class="bg-gray-900/80 px-4 py-3 border-b border-gray-800 flex justify-between items-center">
+                        <div class="flex items-center space-x-2">
+                            <span id="api-method-badge" class="px-2 py-0.5 bg-green-900 border border-green-700 text-green-400 rounded text-[10px] font-bold font-mono">POST</span>
+                            <span id="api-endpoint-path" class="font-mono text-xs text-gray-300 font-medium">/v1/floorplan/ingest</span>
+                        </div>
+                        <button onclick="simulateApiCall()" class="px-3 py-1 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold rounded font-mono transition flex items-center space-x-1.5 shadow">
+                            <i class="fa-solid fa-play text-[10px]"></i>
+                            <span>Execute Request</span>
+                        </button>
+                    </div>
+
+                    <div class="p-4 font-mono text-xs text-blue-300 bg-gray-950 flex-1 min-h-[220px]">
+                        <span class="text-gray-500 block mb-2">// Active Request Configuration Blueprint</span>
+                        <pre id="api-payload-display" class="overflow-x-auto text-emerald-400"></pre>
+                    </div>
+
+                    <div class="bg-gray-900/40 border-t border-gray-800 p-4 font-mono text-xs">
+                        <span class="text-gray-500 block mb-2">// Server Response Output Console</span>
+                        <div id="api-console-response" class="text-gray-400 max-h-[150px] overflow-y-auto">
+                            Click "Execute Request" above to poll system telemetry data.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="border-t border-gray-800 bg-gray-950 text-gray-500 text-xs py-8 mt-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <p>&copy; 2026 VibeRender Spatial Technologies. All systems nominal.</p>
+            <div class="flex space-x-6 text-gray-400 font-medium">
+                <a href="#" class="hover:text-blue-400 transition">Developer SLA Docs</a>
+                <a href="#" class="hover:text-blue-400 transition">3D Texture Assets</a>
+                <a href="#" class="hover:text-blue-400 transition">Hardware Compliance</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Preset mock scenario packages for visualization modules
+        const assets = {
+            kitchen: {
+                before: "https://images.unsplash.com/photo-1565183997392-2f6f122e5912?auto=format&fit=crop&q=80&w=1600",
+                after: "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&q=80&w=1600"
+            },
+            living: {
+                before: "https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&q=80&w=1600",
+                after: "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&q=80&w=1600"
+            }
+        };
+
+        // Static Code Payload Definitions for API interaction block
+        const apiPayloads = {
+            'post-ingest-payload': {
+                source_binary_url: "https://bucket.renovate.internal/blueprints/plan_4902.png",
+                detect_structural_bearing_walls: true,
+                target_conversion_format: "gltf_mesh_v2",
+                coordinate_precision: "cm"
+            },
+            'get-status-payload': {
+                job_uuid: "7b43a802-991b-4148-8df0-1867c427ff0d",
+                include_raw_point_cloud: false,
+                polling_timeout_ms: 5000
+            },
+            'post-transform-payload': {
+                geometry_session_token: "tok_spatial_9938128",
+                aesthetic_style_preset: "Scandinavian_Minimalism",
+                lighting_profile: "Golden_Hour_Ambient",
+                finish_materials: {
+                    flooring: "Honed_Oak_Plank",
+                    counters: "Calacatta_Marble_Polished"
+                }
+            }
+        };
+
+        let activePayloadKey = 'post-ingest-payload';
+
+        // Initialize API sandbox window default values
+        document.getElementById('api-payload-display').textContent = JSON.stringify(apiPayloads[activePayloadKey], null, 4);
+
+        function setActiveEndpoint(method, path, payloadKey) {
+            const badge = document.getElementById('api-method-badge');
+            const pathText = document.getElementById('api-endpoint-path');
+            const payloadDisplay = document.getElementById('api-payload-display');
+
